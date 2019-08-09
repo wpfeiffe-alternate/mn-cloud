@@ -1,0 +1,12 @@
+version "0.1"
+group "mn.cloud"
+
+repositories {
+}
+
+configurations {
+}
+
+dependencies {
+}
+
