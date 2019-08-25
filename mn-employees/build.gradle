@@ -47,7 +47,8 @@ dependencies {
     implementation "io.micronaut.data:micronaut-data-model:$micronautDataVersion"
 
     runtimeOnly "ch.qos.logback:logback-classic:1.2.3"
-    runtimeOnly "com.h2database:h2"
+    runtimeOnly "org.postgresql:postgresql:42.2.6"
+//    runtimeOnly "com.h2database:h2"
     runtimeOnly "io.micronaut:micronaut-discovery-client"
     runtime "io.micronaut.configuration:micronaut-jdbc-tomcat"
     testAnnotationProcessor platform("io.micronaut:micronaut-bom:$micronautVersion")
@@ -59,7 +60,7 @@ dependencies {
 
 test.classpath += configurations.developmentOnly
 
-mainClassName = "mn.data.Application"
+mainClassName = "mn.employees.EmployeeApplication"
 
 // use JUnit 5 platform
 test {

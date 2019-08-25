@@ -1,0 +1,53 @@
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: mn-employees
+  namespace: default
+  labels:
+    app: mn-employees
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mn-employees
+  template:
+    metadata:
+      name: mn-employees
+      labels:
+        app: mn-employees
+    spec:
+      containers:
+        - name: mn-employees
+          image: 'arbfile.org/mn-employees:1.0.4'
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          env:
+            - name: MN_POSTGRES_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-config
+                  key: MN_POSTGRES_HOST
+            - name: MN_POSTGRES_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-config
+                  key: MN_POSTGRES_PORT
+            - name: MN_POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-config
+                  key: MN_POSTGRES_DB
+            - name: MN_POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-config
+                  key: MN_POSTGRES_USER
+            - name: MN_POSTGRES_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-config
+                  key: MN_POSTGRES_PASSWORD
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Always
+

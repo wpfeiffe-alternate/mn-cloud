@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-config
+  labels:
+    app: postgres
+data:
+  MN_POSTGRES_DB: empplaydb
+  MN_POSTGRES_USER: empplay
+  MN_POSTGRES_PASSWORD: Password1
+  MN_POSTGRES_HOST: postgres
+  MN_POSTGRES_PORT: "5432"
