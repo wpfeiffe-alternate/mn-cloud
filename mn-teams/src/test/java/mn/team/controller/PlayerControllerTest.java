@@ -7,7 +7,7 @@ import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.client.HttpClient;
 import io.micronaut.runtime.server.EmbeddedServer;
-import mn.team.domain.Employee;
+import mn.team.domain.Player;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -16,7 +16,8 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 //@MicronautTest
-public class EmployeeControllerTest {
+public class PlayerControllerTest
+{
     private static EmbeddedServer server;
     private static HttpClient client;
 
@@ -41,7 +42,7 @@ public class EmployeeControllerTest {
     @Test
     void testGet()
     {
-        HttpResponse<List<Employee>> response = client.toBlocking().exchange(HttpRequest.GET("/employees"), Argument.listOf(Employee.class));
+        HttpResponse<List<Player>> response = client.toBlocking().exchange(HttpRequest.GET("/players"), Argument.listOf(Player.class));
         Assertions.assertEquals(response.getStatus(), HttpStatus.OK);
         Assertions.assertTrue(response.getBody().isPresent());
         Assertions.assertEquals(response.getBody().get().size(), 250);
@@ -50,7 +51,7 @@ public class EmployeeControllerTest {
     @Test
     void testGetByActive()
     {
-        HttpResponse<List<Employee>> response = client.toBlocking().exchange(HttpRequest.GET("/employees/findBy?active=true"), Argument.listOf(Employee.class));
+        HttpResponse<List<Player>> response = client.toBlocking().exchange(HttpRequest.GET("/players/findBy?position=catcher"), Argument.listOf(Player.class));
         Assertions.assertEquals(response.getStatus(), HttpStatus.OK);
         Assertions.assertTrue(response.getBody().isPresent());
         Assertions.assertEquals(response.getBody().get().size(), 185);

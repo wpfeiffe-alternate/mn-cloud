@@ -9,24 +9,24 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * A Company.
+ * A League.
  */
 @Entity
-@Table(name = "company")
+@Table(name = "league")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-public class Company implements Serializable {
+public class League implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "company_id_seq")
-    @SequenceGenerator(name = "company_id_seq", sequenceName = "company_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "league_id_seq")
+    @SequenceGenerator(name = "league_id_seq", sequenceName = "league_id_seq", allocationSize = 1)
     private Long id;
 
     @NotNull
     @Size(min = 5, max = 60)
-    @Column(name = "company_name", length = 60, nullable = false)
-    private String companyName;
+    @Column(name = "league_name", length = 60, nullable = false)
+    private String leagueName;
 
     public Long getId() {
         return id;
@@ -36,17 +36,17 @@ public class Company implements Serializable {
         this.id = id;
     }
 
-    public String getCompanyName() {
-        return companyName;
+    public String getLeagueName() {
+        return leagueName;
     }
 
-    public Company companyName(String companyName) {
-        this.companyName = companyName;
+    public League leagueName(String leagueName) {
+        this.leagueName = leagueName;
         return this;
     }
 
-    public void setCompanyName(String companyName) {
-        this.companyName = companyName;
+    public void setLeagueName(String leagueName) {
+        this.leagueName = leagueName;
     }
 
     @Override
@@ -57,11 +57,11 @@ public class Company implements Serializable {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Company company = (Company) o;
-        if (company.id == null || id == null) {
+        League league = (League) o;
+        if (league.id == null || id == null) {
             return false;
         }
-        return Objects.equals(id, company.id);
+        return Objects.equals(id, league.id);
     }
 
     @Override
@@ -71,9 +71,9 @@ public class Company implements Serializable {
 
     @Override
     public String toString() {
-        return "Company{" +
+        return "League{" +
             "id=" + id +
-            ", companyName='" + companyName + "'" +
+            ", leagueName='" + leagueName + "'" +
             '}';
     }
 }

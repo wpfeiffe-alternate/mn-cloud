@@ -12,7 +12,7 @@ CREATE SEQUENCE league_id_seq START WITH 100000;
 
 CREATE TABLE league
 (
-    id BIGINT DEFAULT (NEXT VALUE FOR league_id_seq),
+    id BIGINT DEFAULT nextval('league_id_seq'),
     league_name VARCHAR(100) NOT NULL,
 
     CONSTRAINT league_pk PRIMARY KEY (id),
@@ -21,7 +21,7 @@ CREATE TABLE league
 
 CREATE TABLE team
 (
-    id BIGINT DEFAULT (NEXT VALUE FOR team_id_seq),
+    id BIGINT DEFAULT nextval('team_id_seq'),
     team_code VARCHAR(20) NOT NULL,
     team_name VARCHAR(30) NOT NULL,
     league_id BIGINT NOT NULL,
@@ -34,7 +34,7 @@ CREATE TABLE team
 
 CREATE TABLE player
 (
-    id BIGINT DEFAULT (NEXT VALUE FOR player_id_seq),
+    id BIGINT DEFAULT nextval('player_id_seq'),
     full_name VARCHAR(100) NOT NULL,
     position VARCHAR(40) NOT NULL,
     team_id BIGINT NOT NULL,

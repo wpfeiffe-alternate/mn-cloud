@@ -2,12 +2,12 @@ package mn.team.repository;
 
 import io.micronaut.data.annotation.Repository;
 import io.micronaut.data.repository.CrudRepository;
-import mn.team.domain.Department;
+import mn.team.domain.Team;
 
 import java.util.List;
 
 @Repository
-public interface DepartmentRepository extends CrudRepository<Department, Long>
+public interface TeamRepository extends CrudRepository<Team, Long>
 {
-    List<Department> findByDeptCode(String deptCode);
+    List<Team> findByTeamCode(String teamCode);
 }
