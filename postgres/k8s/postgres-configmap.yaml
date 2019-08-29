@@ -5,8 +5,9 @@ metadata:
   labels:
     app: postgres
 data:
-  MN_POSTGRES_DB: empplaydb
-  MN_POSTGRES_USER: empplay
-  MN_POSTGRES_PASSWORD: Password1
-  MN_POSTGRES_HOST: postgres
-  MN_POSTGRES_PORT: "5432"
+  POSTGRES_DB: empplaydb
+  POSTGRES_USER: empplay
+  POSTGRES_PASSWORD: Password1
+  POSTGRES_HOST: postgres-postgresql
+  POSTGRES_PORT: "5432"
+

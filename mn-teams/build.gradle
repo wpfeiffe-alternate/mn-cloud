@@ -10,13 +10,16 @@ buildscript {
 plugins {
     id "net.ltgt.apt-eclipse" version "0.21"
     id "com.github.johnrengelman.shadow" version "5.0.0"
+    id 'com.bmuschko.docker-remote-api' version '4.10.0'
     id "application"
 }
+
+import com.bmuschko.gradle.docker.tasks.image.*
 
 apply plugin: 'org.hibernate.orm'
 
 version "0.1"
-group "mn.employees"
+group "mn.teams"
 
 repositories {
     mavenCentral()
@@ -79,3 +82,83 @@ shadowJar {
 
 run.classpath += configurations.developmentOnly
 run.jvmArgs('-noverify', '-XX:TieredStopAtLevel=1', '-Dcom.sun.management.jmxremote')
+
+docker {
+    registryCredentials {
+        username = "${dockerUsername}"
+        password = "${dockerPassword}"
+    }
+}
+task buildDockerImage(type: DockerBuildImage) {
+    group = "docker"
+
+    inputDir = file("${project.projectDir}")
+    tags.add("${dockerUsername}/${project.name}:latest")
+}
+
+task pushDockerImage(type: DockerPushImage) {
+    group = "docker"
+    imageName = "${dockerUsername}/${project.name}:latest"
+}
+
+task kubernetesCreateDeployment(type: Exec) {
+    workingDir "${project.projectDir}"
+    inputs.dir "${project.projectDir}"
+    group = "k8s"
+    def sysname = System.getProperty("os.name")
+    if (System.getProperty("os.name").toUpperCase().contains("WINDOWS")) {
+        commandLine "cmd.exe", "/c", "kubectl", "create", "-f", "${project.projectDir}\\k8s\\deployment.yaml"
+    } else {
+        commandLine "kubectl", "create",  "-f", "${project.projectDir}/k8s/deployment.yaml"
+    }
+}
+
+task kubernetesDeleteDeployment(type: Exec) {
+    workingDir "${project.projectDir}"
+    inputs.dir "${project.projectDir}"
+    group = "k8s"
+    def sysname = System.getProperty("os.name")
+    if (System.getProperty("os.name").toUpperCase().contains("WINDOWS")) {
+        commandLine "cmd.exe", "/c", "kubectl", "delete", "deployment", "${project.name}"
+    } else {
+        commandLine "kubectl", "delete", "deployment", "${project.name}"
+    }
+}
+
+task kubernetesCreateSvc(type: Exec) {
+    workingDir "${project.projectDir}"
+    inputs.dir "${project.projectDir}"
+    group = "k8s"
+    def sysname = System.getProperty("os.name")
+    if (System.getProperty("os.name").toUpperCase().contains("WINDOWS")) {
+        commandLine "cmd.exe", "/c", "kubectl", "create", "-f", "${project.projectDir}\\k8s\\svc.yaml"
+    } else {
+        commandLine "kubectl", "create",  "-f", "${project.projectDir}/k8s/svc.yaml"
+    }
+}
+
+task kubernetesDeleteSvc(type: Exec) {
+    workingDir "${project.projectDir}"
+    inputs.dir "${project.projectDir}"
+    group = "k8s"
+    def sysname = System.getProperty("os.name")
+    if (System.getProperty("os.name").toUpperCase().contains("WINDOWS")) {
+        commandLine "cmd.exe", "/c", "kubectl", "delete", "svc", "${project.name}"
+    } else {
+        commandLine "kubectl", "delete", "svc", "${project.name}"
+    }
+}
+
+task kubernetesDeleteAll(type: Exec) {
+    workingDir "${project.projectDir}"
+    inputs.dir "${project.projectDir}"
+    group = "k8s"
+    def sysname = System.getProperty("os.name")
+    if (System.getProperty("os.name").toUpperCase().contains("WINDOWS")) {
+        commandLine "cmd.exe", "/c", "kubectl", "delete", "deployment", "${project.name}"
+        commandLine "cmd.exe", "/c", "kubectl", "delete", "svc", "${project.name}"
+    } else {
+        commandLine "kubectl", "delete", "deployment", "${project.name}"
+        commandLine "kubectl", "delete", "svc", "${project.name}"
+    }
+}

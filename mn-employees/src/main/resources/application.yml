@@ -8,10 +8,10 @@ jackson:
 ---
 datasources:
   default:
-    url: jdbc:postgresql://${MN_POSTGRES_HOST:localhost}:${MN_POSTGRES_PORT:5432}/${MN_POSTGRES_DB:empplay}
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:empplay}
     driverClassName: org.postgresql.Driver
-    username: ${MN_POSTGRES_USER:empplay}
-    password: ${MN_POSTGRES_PASSWORD:Password1}
+    username: ${POSTGRES_USER:empplay}
+    password: ${POSTGRES_PASSWORD:Password1}
     schema-generate: NONE
     dialect: Postgres
 jpa:

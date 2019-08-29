@@ -1,0 +1,19 @@
+
+
+task kubernetesDeleteAll(type: Exec) {
+    workingDir "${project.projectDir}"
+    inputs.dir "${project.projectDir}"
+    group = "k8s"
+    def sysname = System.getProperty("os.name")
+    if (System.getProperty("os.name").toUpperCase().contains("WINDOWS")) {
+        commandLine "cmd.exe", "/c", "kubectl", "delete", "service", "${project.name}"
+        commandLine "cmd.exe", "/c", "kubectl", "delete", "deployment", "${project.name}"
+        commandLine "cmd.exe", "/c", "kubectl", "delete", "config-map", "${project.name}-config"
+        commandLine "cmd.exe", "/c", "kubectl", "delete", "persistentvolumeclaim", "${project.name}-pv-claim"
+        commandLine "cmd.exe", "/c", "kubectl", "delete", "persistentvolume", "${project.name}-pv-volume"
+    } else {
+        commandLine "kubectl", "delete", "deployment", "${project.name}"
+        commandLine "kubectl", "delete", "svc", "${project.name}"
+    }
+}
+

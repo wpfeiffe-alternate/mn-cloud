@@ -1,5 +1,5 @@
 kind: Deployment
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 metadata:
   name: mn-teams
   namespace: default
@@ -18,36 +18,13 @@ spec:
     spec:
       containers:
         - name: mn-teams
-          image: 'arbfile.org/mn-teams:1.0.4'
+          image: 'wpfeiffearbfile/mn-teams:latest'
           ports:
             - containerPort: 8080
               protocol: TCP
-          env:
-            - name: MN_POSTGRES_HOST
-              valueFrom:
-                configMapKeyRef:
-                  name: postgres-config
-                  key: MN_POSTGRES_HOST
-            - name: MN_POSTGRES_PORT
-              valueFrom:
-                configMapKeyRef:
-                  name: postgres-config
-                  key: MN_POSTGRES_PORT
-            - name: MN_POSTGRES_DB
-              valueFrom:
-                configMapKeyRef:
-                  name: postgres-config
-                  key: MN_POSTGRES_DB
-            - name: MN_POSTGRES_USER
-              valueFrom:
-                configMapKeyRef:
-                  name: postgres-config
-                  key: MN_POSTGRES_USER
-            - name: MN_POSTGRES_PASSWORD
-              valueFrom:
-                configMapKeyRef:
-                  name: postgres-config
-                  key: MN_POSTGRES_PASSWORD
-          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: postgres-config
+          imagePullPolicy: Always
       restartPolicy: Always
 

@@ -1,4 +1,5 @@
 rootProject.name = 'mn-cloud'
 include 'mn-employees'
 include 'mn-teams'
+include 'postgres'
 

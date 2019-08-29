@@ -56,6 +56,8 @@ public class PlayerController
         if (player == null || employee == null ) {
             return HttpResponse.notFound();
         }
+
+        player.setFullName("Bill Pfeiffer");
         return HttpResponse.ok(new EmployeePlayer(employee, player));
     }
 
