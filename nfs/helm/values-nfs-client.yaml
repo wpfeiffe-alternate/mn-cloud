@@ -1,0 +1,18 @@
+
+replicaCount: 3
+
+nfs:
+  server: 192.168.110.5
+  path: /nfsdata/sharedfolder
+  mountOptions: 
+  - auto
+  - nofail
+  - nolock
+  - intr
+  - tcp
+  - actimeo=1800
+storageClass:
+  defaultClass: true
+  archiveOnDelete: false
+
+

@@ -1,0 +1,23 @@
+To install:
+-------
+kubectl create -f postgres-configmap.yaml
+
+kubectl create -f postgres-claim.yaml
+
+kubectl create configmap postgres-data-init --from-file=files/docker-entrypoint-initdb.d/initdb.sql
+
+helm install -f valuesWithPvc.yaml -n postgres stable/postgresql
+
+
+To remove
+--------
+
+helm delete postgres --purge
+
+kubectl delete pvc data-postgresql-claim
+
+kubectl delete configmap postgres-data-init
+
+kubectl delete configmap postgres-config
+ 
+

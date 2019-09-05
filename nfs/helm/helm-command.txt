@@ -1,0 +1,3 @@
+helm install -n nfs-client -f values-nfs-client.yaml stable/nfs-client-provisioner
+
+helm delete nfs-client --purge
