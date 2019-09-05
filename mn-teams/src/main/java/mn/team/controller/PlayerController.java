@@ -1,5 +1,11 @@
 package mn.team.controller;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.lettuce.core.api.StatefulRedisConnection;
+import io.lettuce.core.api.sync.RedisCommands;
 import io.micronaut.http.HttpHeaders;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.*;
@@ -12,8 +18,10 @@ import mn.team.repository.PlayerRepository;
 import mn.team.service.EmployeesClient;
 import mn.team.service.EmployeesOperations;
 
+import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +30,11 @@ import java.util.Optional;
 @Controller("/players")
 public class PlayerController
 {
+    static final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Inject
+    StatefulRedisConnection<String, String> connection;
+
     private final PlayerRepository playerRepository;
     private final AbstractPlayerRepository abstractPlayerRepository;
     private final EmployeesOperations employeesOperations;
@@ -42,11 +55,26 @@ public class PlayerController
 
     @Get("/{id}")
     public HttpResponse<Player> getById(Long id) {
-        Player found = playerRepository.findById(id).orElse(null);
-        if (found == null) {
-            return HttpResponse.notFound();
+        try
+        {
+            RedisCommands<String, String> commands = connection.sync();
+            String cacheKey = "Player:" + id.toString();
+            String playerString = commands.get(cacheKey);
+            Player cached = playerString == null ? null: objectMapper.readValue(playerString, Player.class);
+            if (cached != null)
+            {
+                return HttpResponse.ok(cached);
+            }
+            Player found = playerRepository.findById(id).orElse(null);
+            if (found == null)
+            {
+                return HttpResponse.notFound();
+            }
+            commands.set(cacheKey, objectMapper.writeValueAsString(found));
+            return HttpResponse.ok(found);
+        } catch (IOException e) {
+            return HttpResponse.serverError();
         }
-        return HttpResponse.ok(found);
     }
 
     @Get("/{id}/extended")
@@ -57,7 +85,7 @@ public class PlayerController
             return HttpResponse.notFound();
         }
 
-        player.setFullName("Bill Pfeiffer");
+        player.setFullName(player.getFullName() + "Tes1");
         return HttpResponse.ok(new EmployeePlayer(employee, player));
     }
 
