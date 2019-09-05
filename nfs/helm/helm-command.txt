@@ -1,3 +1,7 @@
+To install:
+----------
 helm install -n nfs-client -f values-nfs-client.yaml stable/nfs-client-provisioner
 
+To remove:
+---------
 helm delete nfs-client --purge
