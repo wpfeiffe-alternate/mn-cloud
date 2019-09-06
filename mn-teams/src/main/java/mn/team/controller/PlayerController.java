@@ -33,7 +33,7 @@ import java.util.Optional;
 public class PlayerController
 {
     private static final ObjectMapper objectMapper = new ObjectMapper();
-    private static final Logger LOG = LoggerFactory.getLogger(EmployeeController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PlayerController.class);
 
     @Inject
     StatefulRedisConnection<String, String> connection;
