@@ -55,19 +55,16 @@ public class PlayerController
 
     @Get("/{id}")
     public HttpResponse<Player> getById(Long id) {
-        try
-        {
+        try {
             RedisCommands<String, String> commands = connection.sync();
             String cacheKey = "Player:" + id.toString();
             String playerString = commands.get(cacheKey);
             Player cached = playerString == null ? null: objectMapper.readValue(playerString, Player.class);
-            if (cached != null)
-            {
+            if (cached != null) {
                 return HttpResponse.ok(cached);
             }
             Player found = playerRepository.findById(id).orElse(null);
-            if (found == null)
-            {
+            if (found == null) {
                 return HttpResponse.notFound();
             }
             commands.set(cacheKey, objectMapper.writeValueAsString(found));

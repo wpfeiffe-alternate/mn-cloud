@@ -1,5 +1,8 @@
 package mn.employees.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.lettuce.core.api.StatefulRedisConnection;
+import io.lettuce.core.api.sync.RedisCommands;
 import io.micronaut.http.HttpHeaders;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.*;
@@ -7,8 +10,10 @@ import mn.employees.domain.Employee;
 import mn.employees.repository.AbstractEmployeeRepository;
 import mn.employees.repository.EmployeeRepository;
 
+import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +22,11 @@ import java.util.Optional;
 @Controller("/employees")
 public class EmployeeController
 {
+    static final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Inject
+    StatefulRedisConnection<String, String> connection;
+
     private final EmployeeRepository employeeRepository;
     private final AbstractEmployeeRepository abstractEmployeeRepository;
 
@@ -33,11 +43,26 @@ public class EmployeeController
 
     @Get("/{id}")
     public HttpResponse<Employee> getById(Long id) {
-        Employee found = employeeRepository.findById(id).orElse(null);
-        if (found == null) {
-            return HttpResponse.notFound();
+        try
+        {
+            RedisCommands<String, String> commands = connection.sync();
+            String cacheKey = "Employee:" + id.toString();
+            String playerString = commands.get(cacheKey);
+            Employee cached = playerString == null ? null : objectMapper.readValue(playerString, Employee.class);
+            if (cached != null)
+            {
+                return HttpResponse.ok(cached);
+            }
+            Employee found = employeeRepository.findById(id).orElse(null);
+            commands.set(cacheKey, objectMapper.writeValueAsString(found));
+            if (found == null)
+            {
+                return HttpResponse.notFound();
+            }
+            return HttpResponse.ok(found);
+        } catch (IOException e) {
+            return HttpResponse.serverError();
         }
-        return HttpResponse.ok(found);
     }
 
     @Get("/findBy{?firstName,active}")
