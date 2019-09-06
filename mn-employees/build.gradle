@@ -18,7 +18,7 @@ import com.bmuschko.gradle.docker.tasks.image.*
 
 apply plugin: 'org.hibernate.orm'
 
-version "0.1"
+version "0.0.1"
 group "mn.employees"
 
 repositories {
@@ -93,11 +93,11 @@ docker {
 
 task buildDockerImage(type: DockerBuildImage) {
     inputDir = file("${project.projectDir}")
-    tags.add("${dockerUsername}/${project.name}:latest")
+    tags.add("${dockerUsername}/${project.name}:${version}")
 }
 
 task pushDockerImage(type: DockerPushImage) {
-    imageName = "${dockerUsername}/${project.name}:latest"
+    imageName = "${dockerUsername}/${project.name}:${version}"
 }
 
 task kubernetesCreateDeployment(type: Exec) {

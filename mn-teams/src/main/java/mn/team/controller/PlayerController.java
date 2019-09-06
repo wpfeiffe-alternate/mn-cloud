@@ -17,6 +17,8 @@ import mn.team.repository.AbstractPlayerRepository;
 import mn.team.repository.PlayerRepository;
 import mn.team.service.EmployeesClient;
 import mn.team.service.EmployeesOperations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -30,7 +32,8 @@ import java.util.Optional;
 @Controller("/players")
 public class PlayerController
 {
-    static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final Logger LOG = LoggerFactory.getLogger(EmployeeController.class);
 
     @Inject
     StatefulRedisConnection<String, String> connection;
@@ -61,12 +64,14 @@ public class PlayerController
             String playerString = commands.get(cacheKey);
             Player cached = playerString == null ? null: objectMapper.readValue(playerString, Player.class);
             if (cached != null) {
+                LOG.info("Using cached instance of Player");
                 return HttpResponse.ok(cached);
             }
             Player found = playerRepository.findById(id).orElse(null);
             if (found == null) {
                 return HttpResponse.notFound();
             }
+            LOG.info("Caching retrieved instance of Player");
             commands.set(cacheKey, objectMapper.writeValueAsString(found));
             return HttpResponse.ok(found);
         } catch (IOException e) {

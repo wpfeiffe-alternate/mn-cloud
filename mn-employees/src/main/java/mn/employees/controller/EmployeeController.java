@@ -9,6 +9,8 @@ import io.micronaut.http.annotation.*;
 import mn.employees.domain.Employee;
 import mn.employees.repository.AbstractEmployeeRepository;
 import mn.employees.repository.EmployeeRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -22,7 +24,8 @@ import java.util.Optional;
 @Controller("/employees")
 public class EmployeeController
 {
-    static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final Logger LOG = LoggerFactory.getLogger(EmployeeController.class);
 
     @Inject
     StatefulRedisConnection<String, String> connection;
@@ -51,9 +54,11 @@ public class EmployeeController
             Employee cached = playerString == null ? null : objectMapper.readValue(playerString, Employee.class);
             if (cached != null)
             {
+                LOG.info("Using cached instance of Employee");
                 return HttpResponse.ok(cached);
             }
             Employee found = employeeRepository.findById(id).orElse(null);
+            LOG.info("Caching retrieved instance of Employee");
             commands.set(cacheKey, objectMapper.writeValueAsString(found));
             if (found == null)
             {
