@@ -92,11 +92,13 @@ docker {
 }
 
 task buildDockerImage(type: DockerBuildImage) {
+    group = "docker"
     inputDir = file("${project.projectDir}")
     tags.add("${dockerUsername}/${project.name}:${version}")
 }
 
 task pushDockerImage(type: DockerPushImage) {
+    group = "docker"
     imageName = "${dockerUsername}/${project.name}:${version}"
 }
 
