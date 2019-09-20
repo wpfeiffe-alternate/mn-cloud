@@ -4,8 +4,6 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.lettuce.core.api.StatefulRedisConnection;
-import io.lettuce.core.api.sync.RedisCommands;
 import io.micronaut.http.HttpHeaders;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.*;
@@ -35,9 +33,6 @@ public class PlayerController
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private static final Logger LOG = LoggerFactory.getLogger(PlayerController.class);
 
-    @Inject
-    StatefulRedisConnection<String, String> connection;
-
     private final PlayerRepository playerRepository;
     private final AbstractPlayerRepository abstractPlayerRepository;
     private final EmployeesOperations employeesOperations;
@@ -58,25 +53,11 @@ public class PlayerController
 
     @Get("/{id}")
     public HttpResponse<Player> getById(Long id) {
-        try {
-            RedisCommands<String, String> commands = connection.sync();
-            String cacheKey = "Player:" + id.toString();
-            String playerString = commands.get(cacheKey);
-            Player cached = playerString == null ? null: objectMapper.readValue(playerString, Player.class);
-            if (cached != null) {
-                LOG.info("Using cached instance of Player");
-                return HttpResponse.ok(cached);
-            }
-            Player found = playerRepository.findById(id).orElse(null);
-            if (found == null) {
-                return HttpResponse.notFound();
-            }
-            LOG.info("Caching retrieved instance of Player");
-            commands.set(cacheKey, objectMapper.writeValueAsString(found));
-            return HttpResponse.ok(found);
-        } catch (IOException e) {
-            return HttpResponse.serverError();
+        Player found = playerRepository.findById(id).orElse(null);
+        if (found == null) {
+            return HttpResponse.notFound();
         }
+        return HttpResponse.ok(found);
     }
 
     @Get("/{id}/extended")

@@ -1,8 +1,6 @@
 package mn.employees.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.lettuce.core.api.StatefulRedisConnection;
-import io.lettuce.core.api.sync.RedisCommands;
 import io.micronaut.http.HttpHeaders;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.*;
@@ -27,9 +25,6 @@ public class EmployeeController
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private static final Logger LOG = LoggerFactory.getLogger(EmployeeController.class);
 
-    @Inject
-    StatefulRedisConnection<String, String> connection;
-
     private final EmployeeRepository employeeRepository;
     private final AbstractEmployeeRepository abstractEmployeeRepository;
 
@@ -46,28 +41,12 @@ public class EmployeeController
 
     @Get("/{id}")
     public HttpResponse<Employee> getById(Long id) {
-        try
+        Employee found = employeeRepository.findById(id).orElse(null);
+        if (found == null)
         {
-            RedisCommands<String, String> commands = connection.sync();
-            String cacheKey = "Employee:" + id.toString();
-            String playerString = commands.get(cacheKey);
-            Employee cached = playerString == null ? null : objectMapper.readValue(playerString, Employee.class);
-            if (cached != null)
-            {
-                LOG.info("Using cached instance of Employee");
-                return HttpResponse.ok(cached);
-            }
-            Employee found = employeeRepository.findById(id).orElse(null);
-            LOG.info("Caching retrieved instance of Employee");
-            commands.set(cacheKey, objectMapper.writeValueAsString(found));
-            if (found == null)
-            {
-                return HttpResponse.notFound();
-            }
-            return HttpResponse.ok(found);
-        } catch (IOException e) {
-            return HttpResponse.serverError();
+            return HttpResponse.notFound();
         }
+        return HttpResponse.ok(found);
     }
 
     @Get("/findBy{?firstName,active}")
