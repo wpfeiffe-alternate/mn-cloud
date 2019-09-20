@@ -20,8 +20,6 @@ jpa:
       hbm2ddl:
         auto: none
       database-platform: org.hibernate.dialect.PostgreSQLDialiect
-redis:
-  uri: redis://:${REDIS_PASSWORD:Password1}@${REDIS_HOST:192.168.110.5}
 #flyway:
 #  datasources:
 #    default:

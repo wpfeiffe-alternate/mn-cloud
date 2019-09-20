@@ -1,1 +1,0 @@
-helm install -n redis-cluster -f valuesPvc.yaml stable/redis
